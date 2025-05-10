@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { database, ref, onValue, update, remove } from '../firebase';
-import AddProductForm from './AddProductForm';
+
 const EnquiriesTable = () => {
   const [enquiries, setEnquiries] = useState([]);
+  const [searchName, setSearchName] = useState('');
+  const [searchDate, setSearchDate] = useState('');
 
   // Fetch enquiries from Firebase
   useEffect(() => {
@@ -11,12 +13,12 @@ const EnquiriesTable = () => {
       const data = snapshot.val();
       if (data) {
         const loadedEnquiries = Object.entries(data).map(([id, value]) => ({ id, ...value }));
-        setEnquiries(loadedEnquiries.reverse()); // show latest first
+        setEnquiries(loadedEnquiries.reverse()); // Show latest first
       }
     });
   }, []);
 
-  // Handle the status change
+  // Handle status change
   const handleStatusChange = (id, newStatus) => {
     const enquiryRef = ref(database, `enquiries/${id}`);
     update(enquiryRef, { status: newStatus })
@@ -31,7 +33,7 @@ const EnquiriesTable = () => {
       });
   };
 
-  // Handle the deletion of an enquiry
+  // Handle deletion
   const handleDelete = (id) => {
     const enquiryRef = ref(database, `enquiries/${id}`);
     remove(enquiryRef)
@@ -44,9 +46,62 @@ const EnquiriesTable = () => {
       });
   };
 
-  return ( 
+  // Filter logic
+  const filteredEnquiries = enquiries.filter((entry) => {
+    const matchesName = entry.name?.toLowerCase().includes(searchName.toLowerCase());
+    const entryDate = new Date(entry.timestamp).toISOString().split('T')[0]; // yyyy-mm-dd
+    const matchesDate = searchDate ? entryDate === searchDate : true;
+    return matchesName && matchesDate;
+  });
+
+  // Export to CSV
+  const exportToCSV = () => {
+    const headers = ['Name', 'Email', 'Phone', 'Company', 'Message', 'Date', 'Status'];
+    const rows = filteredEnquiries.map(entry => [
+      entry.name,
+      entry.email,
+      entry.phone,
+      entry.company,
+      entry.message,
+      new Date(entry.timestamp).toLocaleString(),
+      entry.status
+    ]);
+
+    let csvContent = 'data:text/csv;charset=utf-8,'
+      + headers.join(',') + '\n'
+      + rows.map(e => e.map(v => `"${v}"`).join(',')).join('\n');
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', 'enquiries.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
     <div style={styles.container}>
       <h2 style={styles.heading}>Submitted Enquiries</h2>
+
+      <div style={styles.filters}>
+        <input
+          type="text"
+          placeholder="Search by name"
+          value={searchName}
+          onChange={(e) => setSearchName(e.target.value)}
+          style={styles.searchInput}
+        />
+        <input
+          type="date"
+          value={searchDate}
+          onChange={(e) => setSearchDate(e.target.value)}
+          style={styles.searchInput}
+        />
+        <button onClick={exportToCSV} style={styles.exportButton}>
+          Export to CSV
+        </button>
+      </div>
 
       <table style={styles.table}>
         <thead>
@@ -62,7 +117,7 @@ const EnquiriesTable = () => {
           </tr>
         </thead>
         <tbody>
-          {enquiries.map((entry) => (
+          {filteredEnquiries.map((entry) => (
             <tr key={entry.id} style={styles.tableRow}>
               <td style={styles.tableCell}>{entry.name}</td>
               <td style={styles.tableCell}>{entry.email}</td>
@@ -112,6 +167,29 @@ const styles = {
     marginBottom: '20px',
     color: '#333',
   },
+  filters: {
+    display: 'flex',
+    gap: '10px',
+    marginBottom: '20px',
+    alignItems: 'center',
+  },
+  searchInput: {
+    padding: '8px',
+    borderRadius: '4px',
+    border: '1px solid #d1d5db',
+    fontSize: '14px',
+    width: '200px',
+  },
+  exportButton: {
+    padding: '8px 16px',
+    backgroundColor: '#10b981',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontSize: '14px',
+    marginLeft: 'auto',
+  },
   table: {
     width: '100%',
     backgroundColor: '#fff',
@@ -130,9 +208,6 @@ const styles = {
   },
   tableRow: {
     borderTop: '1px solid #e5e7eb',
-    '&:hover': {
-      backgroundColor: '#f9fafb',
-    },
   },
   tableCell: {
     padding: '12px',
