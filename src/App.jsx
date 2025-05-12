@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import EnquiriesTable from './components/EnquiriesTable';
-import AddProductForm from './components/AddProductForm'; // Make sure this path is correct
+import AddProductForm from './components/AddProductForm';
+import Feedback from './components/Feedback'; // your CRUD feedback card view
 
 function App() {
   const [activeComponent, setActiveComponent] = useState('enquiries');
@@ -18,6 +19,7 @@ function App() {
         >
           View Enquiries
         </button>
+
         <button
           onClick={() => setActiveComponent('addProduct')}
           style={{
@@ -28,10 +30,23 @@ function App() {
         >
           Add Product
         </button>
+
+        <button
+          onClick={() => setActiveComponent('feedback')}
+          style={{
+            ...styles.button,
+            backgroundColor: activeComponent === 'feedback' ? '#16a34a' : '#e5e7eb',
+            color: activeComponent === 'feedback' ? '#fff' : '#000',
+          }}
+        >
+          Feedback
+        </button>
       </div>
 
       <div style={styles.content}>
-        {activeComponent === 'enquiries' ? <EnquiriesTable /> : <AddProductForm />}
+        {activeComponent === 'enquiries' && <EnquiriesTable />}
+        {activeComponent === 'addProduct' && <AddProductForm />}
+        {activeComponent === 'feedback' && <Feedback />}
       </div>
     </div>
   );
