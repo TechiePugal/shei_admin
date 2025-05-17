@@ -12,6 +12,10 @@ const categoryOptions = [
   'Pneumatics',
   'Textile',
   'White Goods',
+  'Compressor',
+  'Railways',
+  'Hydraulics',
+  'Low Pressure Die Casting Components'
 ];
 
 const AddProductForm = () => {
