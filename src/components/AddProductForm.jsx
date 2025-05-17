@@ -16,6 +16,7 @@ const categoryOptions = [
   'Compressor',
   'Railways',
   'Hydraulics',
+  'Door Closer',
   'Low Pressure Die Casting Components'
 ];
 
