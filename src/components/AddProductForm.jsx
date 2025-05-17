@@ -4,10 +4,14 @@ import { onValue } from 'firebase/database';
 
 const categoryOptions = [
   'All Products',
-  'Textile Components',
-  'Automotive Components',
-  'Petroleum & Oilfield Parts',
-  'Architectural Hardware',
+  'Aerospace and Defence',
+  'Electric Vehicle',
+  'Automotive',
+  'General Engineering',
+  'Oil & Gas',
+  'Pneumatics',
+  'Textile',
+  'White Goods',
 ];
 
 const AddProductForm = () => {
@@ -15,7 +19,6 @@ const AddProductForm = () => {
     title: '',
     category: '',
     image: '',
-    description: '',
     link: '/contact',
   });
 
@@ -56,12 +59,11 @@ const AddProductForm = () => {
       update(productRef, formData)
         .then(() => {
           alert('Product updated successfully!');
-          setEditingProduct(null); // Reset after update
+          setEditingProduct(null);
           setFormData({
             title: '',
             category: '',
             image: '',
-            description: '',
             link: '/contact',
           });
         })
@@ -78,7 +80,6 @@ const AddProductForm = () => {
             title: '',
             category: '',
             image: '',
-            description: '',
             link: '/contact',
           });
         })
@@ -104,7 +105,6 @@ const AddProductForm = () => {
       title: product.title,
       category: product.category,
       image: product.image,
-      description: product.description,
       link: product.link,
     });
     setEditingProduct(product);
@@ -150,15 +150,6 @@ const AddProductForm = () => {
           required
         />
 
-        <textarea
-          name="description"
-          value={formData.description}
-          placeholder="Product Description"
-          onChange={handleChange}
-          style={{ ...styles.input, height: '100px' }}
-          required
-        />
-
         <button type="submit" style={styles.button}>
           {editingProduct ? 'Update Product' : 'Add Product'}
         </button>
@@ -171,7 +162,7 @@ const AddProductForm = () => {
             <tr>
               <th>Title</th>
               <th>Category</th>
-              <th>Description</th>
+              {/* Removed Description Header */}
               <th>Actions</th>
             </tr>
           </thead>
@@ -180,21 +171,20 @@ const AddProductForm = () => {
               <tr key={product.id}>
                 <td>{product.title}</td>
                 <td>{product.category}</td>
-                <td>{product.description}</td>
+                {/* Removed Description Cell */}
                 <td>
-<button
-  style={{ ...styles.button, ...styles.editButton }}
-  onClick={() => handleEdit(product)}
->
-  Edit
-</button>
-<button
-  style={{ ...styles.button, ...styles.deleteButton }}
-  onClick={() => handleDelete(product.id)}
->
-  Delete
-</button>
-
+                  <button
+                    style={{ ...styles.button, ...styles.editButton }}
+                    onClick={() => handleEdit(product)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    style={{ ...styles.button, ...styles.deleteButton }}
+                    onClick={() => handleDelete(product.id)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
@@ -204,7 +194,6 @@ const AddProductForm = () => {
     </div>
   );
 };
-
 
 const styles = {
   form: {
@@ -234,25 +223,6 @@ const styles = {
     transition: 'all 0.2s ease',
     outline: 'none',
   },
-  select: {
-    padding: '12px 16px',
-    fontSize: '16px',
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    backgroundColor: '#fff',
-    transition: 'all 0.2s ease',
-    outline: 'none',
-  },
-  textarea: {
-    padding: '12px 16px',
-    fontSize: '16px',
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    resize: 'vertical',
-    minHeight: '100px',
-    transition: 'all 0.2s ease',
-    outline: 'none',
-  },
   button: {
     padding: '12px 20px',
     fontSize: '16px',
@@ -269,47 +239,26 @@ const styles = {
     borderCollapse: 'collapse',
     boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
   },
-  tableHeader: {
-    backgroundColor: '#f1f5f9',
-    color: '#333',
-    fontWeight: '600',
-    textAlign: 'left',
-    padding: '12px',
-    borderTopLeftRadius: '8px',
-    borderTopRightRadius: '8px',
+  editButton: {
+    padding: '8px 12px',
+    fontSize: '14px',
+    backgroundColor: 'green',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    marginBottom: '10px',
+    marginRight: '10px',
   },
-  tableCell: {
-    padding: '12px 16px',
-    borderBottom: '1px solid #ddd',
-    textAlign: 'left',
-    color: '#333',
+  deleteButton: {
+    padding: '8px 16px',
+    fontSize: '14px',
+    backgroundColor: '#f44336',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
   },
-  tableRow: {
-    transition: 'background-color 0.2s ease',
-  },
-  
-editButton: {
-  padding: '8px 12px',
-  fontSize: '14px',
-  backgroundColor: 'green',
-  color: '#fff',
-  border: 'none',
-  borderRadius: '5px',
-  cursor: 'pointer',
-  marginBottom: '10px',
-  marginRight: '10px', // ✅ Adds spacing between Edit and Delete
-},
-deleteButton: {
-  padding: '8px 16px',
-  fontSize: '14px',
-  backgroundColor: '#f44336',
-  color: '#fff',
-  border: 'none',
-  borderRadius: '5px',
-  cursor: 'pointer',
-},
-
 };
-
 
 export default AddProductForm;
