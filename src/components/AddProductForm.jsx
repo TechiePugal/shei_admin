@@ -4,6 +4,7 @@ import { onValue } from 'firebase/database';
 
 const categoryOptions = [
   'All Products',
+  'Medical',
   'Aerospace and Defence',
   'Electric Vehicle',
   'Automotive',
